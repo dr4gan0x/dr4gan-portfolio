@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dr4gan // kernel</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['"Inter"', 'sans-serif'],
+                        'mono': ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        'bg-main': '#050505',
+                        'bg-sub': '#0a0a0a',
+                        'border-sub': 'rgba(255, 255, 255, 0.08)',
+                        'accent': '#ffffff',
+                        'text-main': '#ededed',
+                        'text-muted': '#a1a1aa',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'slide-up': 'slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    }
+                }
+            }
+        }
+
+        // Global Mouse Position for Spotlight Effects
+        document.addEventListener('mousemove', e => {
+            const x = e.clientX;
+            const y = e.clientY;
+
+            // Update CSS variables for all cards
+            document.querySelectorAll('.post-card, .nav-item').forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const localX = x - rect.left;
+                const localY = y - rect.top;
+                card.style.setProperty('--mouse-x', `${localX}px`);
+                card.style.setProperty('--mouse-y', `${localY}px`);
+            });
+        });
+    </script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Prism.js for Syntax Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <style>
+        /* Custom Prism Overrides for Glassmorphic Look */
+        code[class*="language-"],
+        pre[class*="language-"] {
+            color: #ccc;
+            background: none;
+            font-family: 'JetBrains Mono', monospace;
+            text-shadow: none;
+            font-size: 0.85em;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        /* Inline code override */
+        :not(pre)>code[class*="language-"] {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.1em 0.3em;
+            border-radius: 0.3em;
+            word-break: break-word;
+        }
+
+        /* Force pre elements to respect container width */
+        pre[class*="language-"] {
+            max-width: 100%;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        /* Prevent horizontal overflow */
+        .prose>* {
+            max-width: 100%;
+        }
+
+        img,
+        video,
+        iframe {
+            max-width: 100% !important;
+            height: auto !important;
+        }
+
+        /* Specifically handle code blocks */
+        .prose pre {
+            max-width: calc(100vw - 3rem) !important;
+            overflow-x: auto !important;
+            width: 100% !important;
+        }
+
+        @media (min-width: 1024px) {
+            .prose pre {
+                max-width: 100% !important;
+            }
+        }
+
+        /* Handle long inline code and text */
+        .prose code {
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+
+        /* Ensure table responsive wrapper works */
+        .overflow-x-auto {
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body
+    class="bg-bg-main text-text-main font-sans min-h-screen selection:bg-white selection:text-black antialiased tracking-tight relative"
+    style="overflow-x: clip;">
+
+    <!-- Background is handled in CSS now -->
+
+    <!-- MOBILE TOP HEADER (Visible < lg) -->
+    <header
+        class="lg:hidden fixed top-0 left-0 right-0 h-16 bg-bg-main/80 backdrop-blur-xl border-b border-white/5 z-40 flex items-center justify-between px-4 sm:px-6 transition-all duration-300 max-w-full">
+        <div class="flex items-center gap-3">
+            <img src="assets/pp.jpg" class="w-8 h-8 rounded-full border border-white/10 shadow-lg">
+            <a href="?page=home" class="font-bold text-white tracking-tight text-base sm:text-lg">dr4gan</a>
+        </div>
+        <div class="flex items-center gap-3">
+            <button id="mob-btn-copy-email" class="text-text-muted hover:text-white transition active:scale-95">
+                <i class="ph ph-envelope-simple text-xl" id="mob-icon-email"></i>
+            </button>
+            <button id="mob-btn-copy-discord" class="text-text-muted hover:text-white transition active:scale-95">
+                <i class="ph ph-discord-logo text-xl" id="mob-icon-discord"></i>
+            </button>
+            <a href="https://github.com/dr4gan0x" target="_blank"
+                class="text-text-muted hover:text-white transition active:scale-95">
+                <i class="ph ph-github-logo text-xl"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- MOBILE SEARCH OVERLAY -->
+    <div id="mobile-search-overlay"
+        class="fixed inset-0 bg-[#050505]/95 backdrop-blur-sm z-[60] hidden flex-col p-6 animate-fade-in">
+        <div class="flex justify-end mb-4">
+            <button id="close-mobile-search"
+                class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white active:scale-95 transition">
+                <i class="ph ph-x text-xl"></i>
+            </button>
+        </div>
+        <div class="relative">
+            <i class="ph ph-magnifying-glass absolute left-0 top-1/2 -translate-y-1/2 text-white/50 text-2xl"></i>
+            <input type="text" id="mobile-search-input" placeholder="Search frequency..."
+                class="w-full bg-transparent border-b border-white/20 text-xl text-white py-4 pl-10 focus:outline-none focus:border-green-400 transition-colors font-mono placeholder:text-white/20">
+        </div>
+        <div id="mobile-search-results" class="mt-8 overflow-y-auto flex-1 space-y-4">
+            <!-- Results injected here -->
+        </div>
+    </div>
+
+    <!-- MOBILE BOTTOM NAVIGATION (Visible < lg) -->
+    <nav
+        class="lg:hidden fixed bottom-4 left-4 right-4 h-16 bg-[#0a0a0a]/90 backdrop-blur-xl border border-white/10 rounded-2xl z-40 flex items-center justify-around px-2 shadow-[0_8px_32px_rgba(0,0,0,0.5)] max-w-[calc(100vw-2rem)] mx-auto">
+        <a href="?page=home"
+            class="p-3 text-text-muted hover:text-white transition flex flex-col items-center gap-1 active:scale-90"
+            id="mob-nav-home">
+            <i class="ph ph-house text-xl"></i>
+        </a>
+        <a href="?page=categories"
+            class="p-3 text-text-muted hover:text-white transition flex flex-col items-center gap-1 active:scale-90"
+            id="mob-nav-categories">
+            <i class="ph ph-folder-open text-xl"></i>
+        </a>
+
+        <!-- Search Trigger -->
+        <div class="w-px h-6 bg-white/10 mx-1"></div>
+        <button id="mobile-search-btn"
+            class="p-3 text-text-muted hover:text-white transition flex flex-col items-center gap-1 active:scale-90">
+            <i class="ph ph-magnifying-glass text-xl"></i>
+        </button>
+        <div class="w-px h-6 bg-white/10 mx-1"></div>
+
+        <a href="?page=archives"
+            class="p-3 text-text-muted hover:text-white transition flex flex-col items-center gap-1 active:scale-90"
+            id="mob-nav-archives">
+            <i class="ph ph-archive text-xl"></i>
+        </a>
+        <a href="?page=about"
+            class="p-3 text-text-muted hover:text-white transition flex flex-col items-center gap-1 active:scale-90"
+            id="mob-nav-about">
+            <i class="ph ph-user text-xl"></i>
+        </a>
+    </nav>
+
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 pb-32 lg:pb-0">
+        <div
+            class="grid grid-cols-1 lg:grid-cols-[260px_1fr_280px] gap-4 md:gap-8 items-start min-h-screen pt-24 lg:pt-12">
+
+
+            <!-- LEFT SIDEBAR -->
+            <aside class="sticky top-8 flex flex-col gap-5 max-w-[260px] hidden lg:flex">
+
+                <!-- Profile Card -->
+                <div class="sidebar-card rounded-3xl p-6 relative overflow-hidden group">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition duration-500">
+                    </div>
+
+                    <div class="relative z-10 flex flex-col items-center text-center">
+                        <div class="relative mb-4">
+                            <div
+                                class="w-20 h-20 rounded-2xl bg-gradient-to-br from-white/10 to-transparent border border-white/5 shadow-2xl overflow-hidden">
+                                <img src="assets/pp.jpg" alt="Profile"
+                                    class="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition duration-500">
+                            </div>
+                        </div>
+
+                        <h1 class="text-lg font-bold text-white tracking-tight mb-1">dr4gan</h1>
+
+                        <a href="https://github.com/dr4gan0x" target="_blank"
+                            class="text-xs font-mono text-white/40 hover:text-white transition-colors duration-300 mb-4 inline-block cursor-pointer">
+                            @dr4gan0x
+                        </a>
+
+                        <div class="max-w-[240px] mb-6 flex flex-col gap-1">
+                            <p class="text-sm font-bold text-white leading-tight">
+                                Reverse Engineer & Low-Level Developer
+                            </p>
+                            <div class="w-8 h-px bg-white/10 mx-auto my-1"></div>
+                            <p class="text-[13px] font-medium italic text-gray-400 leading-tight">
+                                Specializing in Windows Kernel & System Security
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <nav class="sidebar-card rounded-3xl p-2 flex flex-col gap-1">
+                    <a href="?page=home"
+                        class="nav-item group flex items-center gap-3.5 px-3 py-2.5 rounded-2xl text-text-muted hover:text-white hover:bg-white/[0.04] transition-all duration-300">
+                        <span
+                            class="w-8 h-8 flex items-center justify-center rounded-xl bg-white/[0.03] group-hover:bg-white/[0.08] group-active:scale-95 transition-all duration-300 border border-white/5 border-transparent group-hover:border-white/10">
+                            <i class="ph ph-house text-lg"></i>
+                        </span>
+                        <span class="font-medium text-sm tracking-wide">Home</span>
+                    </a>
+                    <a href="?page=categories"
+                        class="nav-item group flex items-center gap-3.5 px-3 py-2.5 rounded-2xl text-text-muted hover:text-white hover:bg-white/[0.04] transition-all duration-300">
+                        <span
+                            class="w-8 h-8 flex items-center justify-center rounded-xl bg-white/[0.03] group-hover:bg-white/[0.08] group-active:scale-95 transition-all duration-300 border border-white/5 border-transparent group-hover:border-white/10">
+                            <i class="ph ph-folder-open text-lg"></i>
+                        </span>
+                        <span class="font-medium text-sm tracking-wide">Categories</span>
+                    </a>
+                    <a href="?page=archives"
+                        class="nav-item group flex items-center gap-3.5 px-3 py-2.5 rounded-2xl text-text-muted hover:text-white hover:bg-white/[0.04] transition-all duration-300">
+                        <span
+                            class="w-8 h-8 flex items-center justify-center rounded-xl bg-white/[0.03] group-hover:bg-white/[0.08] group-active:scale-95 transition-all duration-300 border border-white/5 border-transparent group-hover:border-white/10">
+                            <i class="ph ph-archive text-lg"></i>
+                        </span>
+                        <span class="font-medium text-sm tracking-wide">Archives</span>
+                    </a>
+                    <a href="?page=about"
+                        class="nav-item group flex items-center gap-3.5 px-3 py-2.5 rounded-2xl text-text-muted hover:text-white hover:bg-white/[0.04] transition-all duration-300">
+                        <span
+                            class="w-8 h-8 flex items-center justify-center rounded-xl bg-white/[0.03] group-hover:bg-white/[0.08] group-active:scale-95 transition-all duration-300 border border-white/5 border-transparent group-hover:border-white/10">
+                            <i class="ph ph-user text-lg"></i>
+                        </span>
+                        <span class="font-medium text-sm tracking-wide">About</span>
+                    </a>
+                </nav>
+
+                <!-- Socials -->
+                <div class="sidebar-card rounded-3xl p-4">
+                    <div class="grid grid-cols-3 gap-2">
+                        <a href="https://github.com/dr4gan0x" target="_blank" class="sidebar-social-btn group">
+                            <i class="ph ph-github-logo text-lg transition-colors duration-300"></i>
+                        </a>
+                        <button id="btn-copy-email" class="sidebar-social-btn group">
+                            <i class="ph ph-envelope-simple text-lg transition-colors duration-300" id="icon-email"></i>
+                        </button>
+                        <button id="btn-copy-discord" class="sidebar-social-btn group">
+                            <i class="ph ph-discord-logo text-lg transition-colors duration-300" id="icon-discord"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hidden elements for JS hook -->
+                <span id="text-email" class="hidden">drgan754@gmail.com</span>
+                <span id="text-discord" class="hidden">@karabatik</span>
+
+            </aside>
+
+            <!-- MAIN CONTENT -->
+            <main id="main-content" class="min-w-0 relative z-10">
+                <!-- Javascript injects Cards here -->
+                <div class="animate-pulse space-y-4">
+                    <div class="h-48 bg-[#1e1e20] rounded-xl border border-white/5"></div>
+                    <div class="h-48 bg-[#1e1e20] rounded-xl border border-white/5"></div>
+                    <div class="h-48 bg-[#1e1e20] rounded-xl border border-white/5"></div>
+                </div>
+            </main>
+
+            <!-- RIGHT SIDEBAR -->
+            <aside id="right-sidebar"
+                class="sticky top-8 max-h-[calc(100vh-4rem)] overflow-y-auto overflow-x-hidden z-10 transition-all duration-500 hidden lg:block space-y-6">
+
+                <!-- Search Widget -->
+                <div class="glass-panel rounded-2xl p-1.5 relative group">
+                    <div
+                        class="absolute -inset-0.5 bg-gradient-to-r from-white/10 to-transparent rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500">
+                    </div>
+                    <div class="relative flex items-center">
+                        <i class="ph ph-magnifying-glass absolute left-4 text-neutral-500 text-lg"></i>
+                        <input type="text" id="search-input" placeholder="Search memory..."
+                            class="w-full bg-transparent border-none text-sm text-white py-3 pl-12 pr-4 focus:outline-none placeholder:text-neutral-600 font-medium">
+                    </div>
+                </div>
+
+                <!-- Updates Widget -->
+                <div class="glass-panel rounded-2xl p-6 border border-white/5">
+                    <h3
+                        class="uppercase text-[10px] font-bold text-text-muted tracking-widest mb-4 flex items-center gap-2">
+                        <i class="ph ph-lightning text-yellow-500"></i> Signal Log
+                    </h3>
+                    <!-- Added ID recent-updated-list -->
+                    <ul class="space-y-1 text-sm" id="recent-updated-list">
+                        <li class="text-xs text-gray-700">Initializing...</li>
+                    </ul>
+                </div>
+
+            </aside>
+
+        </div>
+    </div>
+
+    <script src="data/config.js"></script>
+    <!-- Modular Posts -->
+    <script src="content/posts/prometheus-12-layers.js"></script>
+    <script src="content/posts/mefedron-crackme.js"></script>
+    <!-- Engine -->
+    <script src="js/engine.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+
+</html>
