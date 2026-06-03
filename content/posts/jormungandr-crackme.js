@@ -15,29 +15,29 @@ window.Dr4ganData.posts.push({
         <div class="space-y-8">
             <!-- Metadata Block -->
             <div class="bg-white/[0.03] p-4 md:p-6 rounded-xl border border-white/5 font-mono text-xs sm:text-sm space-y-3">
-                <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0 border-b border-white/5 pb-2">
-                    <span class="text-text-muted">Target</span>
-                    <span class="text-white break-words">Jörmungandr CrackMe (jormungandr.exe)</span>
+                <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4 border-b border-white/5 pb-2">
+                    <span class="text-text-muted shrink-0">Target</span>
+                    <span class="text-white break-words sm:text-right">Jörmungandr CrackMe (jormungandr.exe)</span>
                 </div>
-                <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0 border-b border-white/5 pb-2">
-                    <span class="text-text-muted">Platform</span>
-                    <span class="text-white break-words">PE64 / x86-64 / Windows 10</span>
+                <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4 border-b border-white/5 pb-2">
+                    <span class="text-text-muted shrink-0">Platform</span>
+                    <span class="text-white break-words sm:text-right">PE64 / x86-64 / Windows 10</span>
                 </div>
-                <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0 border-b border-white/5 pb-2">
-                    <span class="text-text-muted">Size</span>
-                    <span class="text-white break-words">~122 KB on disk / ~150 KB mapped</span>
+                <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4 border-b border-white/5 pb-2">
+                    <span class="text-text-muted shrink-0">Size</span>
+                    <span class="text-white break-words sm:text-right">~122 KB on disk / ~150 KB mapped</span>
                 </div>
-                <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0 border-b border-white/5 pb-2">
-                    <span class="text-text-muted">Protection</span>
-                    <span class="text-white break-words">Hash-resolved IAT + EC Virtual Machine + Heap-JIT Validator + Trap-Flag SMC + UD2 Nanomite + Anti-Emulation + Direct Syscalls + Decoy Serial</span>
+                <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4 border-b border-white/5 pb-2">
+                    <span class="text-text-muted shrink-0">Protection</span>
+                    <span class="text-white break-words sm:text-right">Hash-resolved IAT + EC Virtual Machine + Heap-JIT Validator + Trap-Flag SMC + UD2 Nanomite + Anti-Emulation + Direct Syscalls + Decoy Serial</span>
                 </div>
-                <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0 border-b border-white/5 pb-2">
-                    <span class="text-text-muted">Tooling</span>
-                    <span class="text-white break-words">Binary Ninja 5.2 (HLIL / MLIL / LLIL), Python 3, passive process loader</span>
+                <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4 border-b border-white/5 pb-2">
+                    <span class="text-text-muted shrink-0">Tooling</span>
+                    <span class="text-white break-words sm:text-right">Binary Ninja 5.2 (HLIL / MLIL / LLIL), Python 3, passive process loader</span>
                 </div>
-                <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0 pt-1">
-                    <span class="text-text-muted">Result</span>
-                    <span class="text-green-400 font-bold tracking-wider break-words">SERIAL_RECOVERED + CLEAN_DONE</span>
+                <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4 pt-1">
+                    <span class="text-text-muted shrink-0">Result</span>
+                    <span class="text-green-400 font-bold tracking-wider break-words sm:text-right">SERIAL_RECOVERED + CLEAN_DONE</span>
                 </div>
             </div>
 
